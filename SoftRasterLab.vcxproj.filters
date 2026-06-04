@@ -33,9 +33,6 @@
     <ClCompile Include="src\Vector.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BoundingVolume.h">
@@ -53,7 +50,7 @@
     <ClInclude Include="include\Vector.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="include\OBJ_Loader.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
