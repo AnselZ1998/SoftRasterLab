@@ -19,21 +19,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="src\BoundingVolume.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\matrix4.cpp" />
+    <ClCompile Include="src\Matrix.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\StaticMesh.cpp" />
     <ClCompile Include="src\Vector.cpp" />
-    <ClCompile Include="src\vector4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="include\BoundingVolume.h" />
-    <ClInclude Include="include\matrix4.h" />
+    <ClInclude Include="include\Matrix.h" />
     <ClInclude Include="include\Scene.h" />
     <ClInclude Include="include\StaticMesh.h" />
     <ClInclude Include="include\Vector.h" />
-    <ClInclude Include="include\vector4.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -127,6 +127,9 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>editbin /SUBSYSTEM:CONSOLE "$(TargetPath)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -144,6 +147,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>editbin /SUBSYSTEM:CONSOLE "$(TargetPath)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

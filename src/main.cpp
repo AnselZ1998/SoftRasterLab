@@ -83,7 +83,7 @@ INT WINAPI WinMain(HINSTANCE inHInstance, HINSTANCE, LPSTR inCommandLine, int) {
         }
         QueryPerformanceCounter(&startTime);
         //debug mode
-        //RenderOneFrame(0.0f);
+        RenderOneFrame(0.0f);
         QueryPerformanceCounter(&endTime);
         float deltaTime = (float)(endTime.QuadPart - startTime.QuadPart) / (float)frequency.QuadPart;
         //std::cout << "deltaTime: " << deltaTime  << "s" << std::endl;

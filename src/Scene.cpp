@@ -13,11 +13,10 @@ void InitScene(int inViewportWidth, int inViewportHeight) {
 }
 
 static void TestVector4() {
-    matrix4 m1;
-    //std::cout << "m1: " << m1 << std::endl;
+   
 }
 
-bool IsInTriangle(int inX, int inY, const vector4& inA, const vector4& inB, const vector4& inC) {
+bool IsInTriangle(int inX, int inY, const Vector4& inA, const Vector4& inB, const Vector4& inC) {
     Vector2 A = { inA.x, inA.y };
     Vector2 B = { inB.x, inB.y };
     Vector2 C = { inC.x, inC.y };
@@ -42,9 +41,9 @@ bool IsInTriangle(int inX, int inY, const vector4& inA, const vector4& inB, cons
     return sameSide;
 }
 
-void RenderTriangle(const vector4& A, const vector4& B, const vector4& C)
+void RenderTriangle(const Vector4& A, const Vector4& B, const Vector4& C)
 {
-    vector4 ASS(A), BSS(B), CSS(C);
+    Vector4 ASS(A), BSS(B), CSS(C);
     
     // NDC -> Screen Space
     // NDC *= 0.5f -> += 0.5f -> *gCanvas -1
@@ -78,24 +77,32 @@ void RenderTriangle(const vector4& A, const vector4& B, const vector4& C)
     }
 }
 
-void DrawTriangle(const vector4& AWorld, const vector4& BWorld, const vector4& CWorld) {
+void DrawTriangle(const Vector3& SA, const Vector3& SB, const Vector3& SC) {
+    // vec3 -> vec4
+    Vector4 SA4 = Vector4::FromPoint(SA);
+    Vector4 SB4 = Vector4::FromPoint(SB);
+    Vector4 SC4 = Vector4::FromPoint(SC);
+
     // camera
-    vector4 cameraPos = { 0.0f, 0.0f, -10.0f, 1.0f };
-    matrix4 m4;
+    Vector4 cameraPos = { 0.0f, 0.0f, -10.0f, 1.0f };
     float fov = 45.0f * 3.1415926f / 180.0f;
 
-    matrix4 ViewMatrix = matrix4::Translation(
+    // View Matrix
+    Matrix4 m4View;
+    m4View.SetTranslation(
         -cameraPos.x,
         -cameraPos.y,
         -cameraPos.z
     );
 
     // 1. World Space -> View Space
-    vector4 AView = ViewMatrix * AWorld;
-    vector4 BView = ViewMatrix * BWorld;
-    vector4 CView = ViewMatrix * CWorld;
+    Vector4 AView = m4View * SA4;
+    Vector4 BView = m4View * SB4;
+    Vector4 CView = m4View * SC4;
 
-    matrix4 ProjectionMatrix = m4.GetPerspective(
+    // Projection Matrix
+    Matrix4 m4Pro;
+    m4Pro.SetPerspective(
         fov,
         1.0f,
         0.1f,
@@ -103,32 +110,31 @@ void DrawTriangle(const vector4& AWorld, const vector4& BWorld, const vector4& C
     );
 
     // 2. View Space -> Clip Space
-    vector4 AClip = ProjectionMatrix * AView;
-    vector4 BClip = ProjectionMatrix * BView;
-    vector4 CClip = ProjectionMatrix * CView;
+    Vector4 AClip = m4Pro * AView;
+    Vector4 BClip = m4Pro * BView;
+    Vector4 CClip = m4Pro * CView;
 
     // 3. Perspective Divide: Clip -> NDC
-    vector4 ANDC = PerspectiveDivide(AClip);
-    vector4 BNDC = PerspectiveDivide(BClip);
-    vector4 CNDC = PerspectiveDivide(CClip);
+    Vector4 ANDC = PerspectiveDivide(AClip);
+    Vector4 BNDC = PerspectiveDivide(BClip);
+    Vector4 CNDC = PerspectiveDivide(CClip);
 
     // 4. NDC -> Screen + Rasterization
     RenderTriangle(ANDC, BNDC, CNDC);
 }
 
 void RenderOneFrame(float inFrameTime) {
-    // World Space
-    vector4 A = { -1.0f, -0.8f, 4.0f, 1.0f };
-    vector4 B = { 1.2f, -0.6f, 6.0f, 1.0f };
-    vector4 C = { 0.0f,  1.0f, 13.0f, 1.0f };
+    // Origin Triangle Point
+    Vector3 SA = { -1.0f, -0.8f, 4.0f};
+    Vector3 SB = { 1.2f, -0.6f, 6.0f};
+    Vector3 SC = { 0.0f,  1.0f, 13.0f};
 
-    DrawTriangle(A, B, C);
-	
+    DrawTriangle(SA, SB, SC);
 }
 
-vector4 PerspectiveDivide(const vector4& v)
+Vector4 PerspectiveDivide(const Vector4& v)
 {
-    return vector4(
+    return Vector4(
         v.x / v.w,
         v.y / v.w,
         v.z / v.w,

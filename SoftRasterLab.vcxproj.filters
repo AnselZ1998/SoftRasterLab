@@ -21,7 +21,7 @@
     <ClCompile Include="src\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\matrix4.cpp">
+    <ClCompile Include="src\Matrix.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene.cpp">
@@ -33,7 +33,7 @@
     <ClCompile Include="src\Vector.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\vector4.cpp">
+    <ClCompile Include="Camera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClInclude Include="include\BoundingVolume.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\matrix4.h">
+    <ClInclude Include="include\Matrix.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="include\Scene.h">
@@ -53,7 +53,7 @@
     <ClInclude Include="include\Vector.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\vector4.h">
+    <ClInclude Include="Camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include"vector4.h"
+#include"Vector.h"
 
 class BoundingVolume
 {
@@ -10,6 +10,6 @@ public:
     float maxX;
     float maxY;
 
-	void GetBoundingVolume(const vector4& inVectorPa, const vector4& inVectorPb, const vector4& inVectorPc);
+	void GetBoundingVolume(const Vector4& inVectorPa, const Vector4& inVectorPb, const Vector4& inVectorPc);
 
 };
