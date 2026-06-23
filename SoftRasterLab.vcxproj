@@ -20,17 +20,30 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BoundingVolume.cpp" />
+    <ClCompile Include="src\DisplayManager.cpp" />
+    <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Matrix.cpp" />
+    <ClCompile Include="src\Quaternion.cpp" />
+    <ClCompile Include="src\Rasterizer.cpp" />
     <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\SoftwareRenderer.cpp" />
     <ClCompile Include="src\StaticMesh.cpp" />
     <ClCompile Include="src\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BoundingVolume.h" />
+    <ClInclude Include="include\Buffer.h" />
+    <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\DisplayManager.h" />
+    <ClInclude Include="include\Engine.h" />
     <ClInclude Include="include\Matrix.h" />
     <ClInclude Include="include\OBJ_Loader.h" />
+    <ClInclude Include="include\Quaternion.h" />
+    <ClInclude Include="include\Rasterizer.h" />
+    <ClInclude Include="include\Renderer.h" />
     <ClInclude Include="include\Scene.h" />
+    <ClInclude Include="include\SoftwareRenderer.h" />
     <ClInclude Include="include\StaticMesh.h" />
     <ClInclude Include="include\Vector.h" />
   </ItemGroup>

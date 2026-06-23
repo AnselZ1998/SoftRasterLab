@@ -4,6 +4,7 @@
 #include "Matrix.h"
 #include <iostream>
 
+static void ClearScreen();
 void OnMouseWheel(int wheelDelta);
 void OnMouseDrag(int dx, int dy);
 void LoadModel();

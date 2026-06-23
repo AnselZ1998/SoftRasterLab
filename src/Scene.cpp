@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include <iostream>
 #include "OBJ_Loader.h"
+#include "Renderer.h"
 
 static int gWidth = 0;
 static int gHeight = 0;
@@ -40,8 +41,10 @@ void LoadModel() {
 }
 
 void RenderOneFrame(float inFrameTime) {
-    // TODO: ClearScreen();
 
+
+    // TODO: ClearScreen();
+    ClearScreen();
     // 1. Model Matrix
     Matrix4 scaleMatrix;
     scaleMatrix.SetScale(gModelScale, gModelScale, gModelScale);
@@ -159,7 +162,7 @@ void RenderTriangle(const Vector4& A, const Vector4& B, const Vector4& C)
         for (int y = minY_i; y < maxY_i; y++)
         {
             if (IsInTriangle(x, y, ASS, BSS, CSS)) {
-                SetPixelColor(x, y, 255, 200, 80, 255);
+                /*SetPixelColor(x, y, 255, 200, 80, 255);*/
             }
         }
     }
@@ -228,4 +231,15 @@ void OnMouseDrag(int dx, int dy)
 
     gModelOffsetX += dx * moveSpeed;
     gModelOffsetY -= dy * moveSpeed;
+}
+
+static void ClearScreen()
+{
+    for (int y = 0; y < gHeight; ++y)
+    {
+        for (int x = 0; x < gWidth; ++x)
+        {
+            //SetPixelColor(x, y, 41, 77, 121, 255);
+        }
+    }
 }
