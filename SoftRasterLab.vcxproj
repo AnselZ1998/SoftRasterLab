@@ -33,6 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BoundingVolume.h" />
+    <ClInclude Include="include\Bounds.h" />
     <ClInclude Include="include\Buffer.h" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\DisplayManager.h" />

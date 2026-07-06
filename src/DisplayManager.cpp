@@ -46,29 +46,29 @@ bool DisplayManager::StartUp(
     return true;
 }
 
-void DisplayManager::Present(const Buffer<std::uint32_t>& colorBuffer)
+void DisplayManager::Present(const Buffer<std::uint32_t>* colorBuffer)
 {
-    assert(colorBuffer.GetHeight() == mClientHeight);
-    assert(colorBuffer.GetWidth() == mClientWidth);
+    assert(colorBuffer -> GetHeight() == mClientHeight);
+    assert(colorBuffer -> GetWidth() == mClientWidth);
 
     if (mBitmapPixels == nullptr)
     {
         return;
     }
 
-    if (colorBuffer.GetWidth() != mClientWidth ||
-        colorBuffer.GetHeight() != mClientHeight)
+    if (colorBuffer -> GetWidth() != mClientWidth ||
+        colorBuffer -> GetHeight() != mClientHeight)
     {
         return;
     }
 
     std::size_t byteCount =
-        colorBuffer.GetPixelCount() *
+        colorBuffer -> GetPixelCount() *
         sizeof(std::uint32_t);
 
     std::memcpy(
         mBitmapPixels,
-        colorBuffer.Data(),
+        colorBuffer -> Data(),
         byteCount
     );
 

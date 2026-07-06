@@ -15,7 +15,7 @@ public:
         int clientWidth,
         int clientHeight
     );
-    void Present(const Buffer<std::uint32_t>& colorBuffer);
+    void Present(const Buffer<std::uint32_t>* colorBuffer);
     void ShutDown();
 
     HWND GetWindowHandle() const;

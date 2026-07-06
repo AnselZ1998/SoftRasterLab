@@ -15,9 +15,9 @@ public:
 	void ShutDown();
 	void BeginFrame(std::uint32_t clearColor);
 
-	const Buffer<std::uint32_t>& GetColorBuffer() const;
+	const Buffer<std::uint32_t>* GetColorBuffer() const;
 
-	void tempRenderTest();
+	void Render();
 
 private:
 	Buffer<std::uint32_t> mColorBuffer;

@@ -65,8 +65,7 @@ void Engine::Run()
             break;
         }
 
-        mSoftwareRenderer.BeginFrame(0x00FF00FF);
-        mSoftwareRenderer.tempRenderTest();
+        mSoftwareRenderer.Render();
         mDisplayManager.Present(mSoftwareRenderer.GetColorBuffer());
 
         Sleep(1);
