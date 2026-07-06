@@ -3,7 +3,7 @@
 #include <Windows.h>
 
 #include "DisplayManager.h"
-#include "SoftwareRenderer.h"
+#include "RenderManager.h"
 
 class Engine
 {
@@ -17,7 +17,7 @@ public:
 
 private:
     DisplayManager mDisplayManager;
-    SoftwareRenderer mSoftwareRenderer;
+    RenderManager mRenderManager;
 
     bool mIsStarted = false;
 

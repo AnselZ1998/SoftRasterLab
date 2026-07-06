@@ -10,6 +10,8 @@ bool SoftwareRenderer::StartUp(int width, int height)
 
     mColorBuffer.Resize(width, height);
     mDepthBuffer.Resize(width, height);
+    swWidth = width;
+    swHeight = height;
 
     if (!mColorBuffer.IsValid() || !mDepthBuffer.IsValid())
     {
@@ -42,46 +44,72 @@ void SoftwareRenderer::BeginFrame(std::uint32_t clearColor)
         return;
     }
     mColorBuffer.Clear(clearColor);
-    mDepthBuffer.Clear(0.0f);
+    mDepthBuffer.Clear(1.0f);
 }
 
 const Buffer<std::uint32_t>* SoftwareRenderer::GetColorBuffer() const
 {
     assert(mIsStarted);
-
     return &mColorBuffer;
 }
 
-void SoftwareRenderer::Render()
+void SoftwareRenderer::drawTriangularMesh()
 {
-    BeginFrame(0x00FF00FF);
-    int tmpw = mDepthBuffer.GetWidth();
-    int tmph = mDepthBuffer.GetHeight();
 
     std::uint32_t red = (0xFF << 24) | (255 << 16) | (0 << 8) | 0;
     std::uint32_t green = (0xFF << 24) | (0 << 16) | (255 << 8) | 0;
 
+    Vector3 p0(-0.5f, -0.5f, 0.0f);
+    Vector3 p1(0.5f, -0.5f, 0.0f);
+    Vector3 p2(0.0f, 0.5f, 0.0f);
 
-    // ==========================================
-    // 三角形 A (红色) - 整体设定在较远位置 (Depth = 0.7)
-    // ==========================================
-    Vector2 a_p0(150.0f, 120.0f);
-    Vector2 a_p1(100.0f, 50.0f);
-    Vector2 a_p2(200.0f, 50.0f);
-    float a_d0 = 0.7f, a_d1 = 0.7f, a_d2 = 0.7f;
-
-    // ==========================================
-    // 三角形 B (绿色) - 整体设定在较近位置 (Depth = 0.3)
-    // 它与三角形 A 在右侧有重叠区域
-    // ==========================================
-    Vector2 b_p0(200.0f, 120.0f);
-    Vector2 b_p1(150.0f, 50.0f);
-    Vector2 b_p2(250.0f, 50.0f);
     float b_d0 = 0.3f, b_d1 = 0.3f, b_d2 = 0.3f;
+    Vector3 cameraPos(0.0f, 0.0f, 3.0f);
+    Vector3 cameraTarget(0.0f, 0.0f, 0.0f);
+    Vector3 cameraUp(0.0f, 1.0f, 0.0f);
+    constexpr float PI = 3.1415926535f;
+    static float time = 0.0f;
+    time += 0.02f;
 
+  // 1.Build Matrix mvp
+    
+    // Model (local -> world)
+    Matrix4 transform = Matrix4::Translation(0.0, 0.0, 0.0);
+    Matrix4 scale = Matrix4::Scale(1.0, 1.0, 1.0);
+    Matrix4 rotation = Matrix4::RotationFromEuler(time * 0.5f, time, time * 0.25f);
+    Matrix4 model = transform * rotation * scale;
 
-    mRasterizer.DrawTriangle(a_p0, a_d0, a_p1, a_d1, a_p2, a_d2, red);
-    mRasterizer.DrawTriangle(b_p0, b_d0, b_p1, b_d1, b_p2, b_d2, green);
+    // View (world -> view)
+    Matrix4 view = Matrix4::LookAtRH(cameraPos, cameraTarget, cameraUp);
+    Matrix4 projection = Matrix4::PerspectiveRH(60.0f * PI / 180.0f, float(swWidth) / float(swHeight),
+        0.1f,
+        100.0f
+        );
 
+    // Projection (View -> Clip)
+    Matrix4 mvp = projection * view * model;
+
+    // Clip -> NDC -> Screen
+    ScreenVertex screenP0 = TransformToScreen(p0, mvp);
+    ScreenVertex screenP1 = TransformToScreen(p1, mvp);
+    ScreenVertex screenP2 = TransformToScreen(p2, mvp);
+
+    mRasterizer.DrawTriangle(screenP0.position, screenP0.depth, screenP1.position, screenP1.depth, screenP2.position, screenP2.depth, red);
+
+}
+
+ScreenVertex SoftwareRenderer::TransformToScreen(const Vector3& localPos, const Matrix4& mvp)
+{
+
+    Vector4 clipPos = mvp * Vector4::FromPoint(localPos);
+    Vector3 ndc = clipPos.PerspectiveDivide();
+    float screenX = (ndc.x + 1.0f) * 0.5f * swWidth;
+    float screenY = (1.0f - ndc.y) * 0.5f * swHeight;
+
+    ScreenVertex out;
+    out.position = Vector2(screenX, screenY);
+    out.depth = ndc.z;
+
+    return out;
 }
 

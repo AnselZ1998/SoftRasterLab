@@ -6,12 +6,24 @@
 
 Matrix4::Matrix4()
 {
-    Set(
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1
+    SetIdentity();
+}
+
+Matrix4& Matrix4::SetIdentity()
+{
+    return Set(
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
     );
+}
+
+Matrix4 Matrix4::Identity()
+{
+    Matrix4 result;
+    result.SetIdentity();
+    return result;
 }
 
 Matrix4& Matrix4::Set(
@@ -21,39 +33,147 @@ Matrix4& Matrix4::Set(
     float m41, float m42, float m43, float m44
 )
 {
-    _data[0] = m11; _data[1] = m12; _data[2] = m13; _data[3] = m14;
-    _data[4] = m21; _data[5] = m22; _data[6] = m23; _data[7] = m24;
-    _data[8] = m31; _data[9] = m32; _data[10] = m33; _data[11] = m34;
-    _data[12] = m41; _data[13] = m42; _data[14] = m43; _data[15] = m44;
+    _11 = m11; _12 = m12; _13 = m13; _14 = m14;
+    _21 = m21; _22 = m22; _23 = m23; _24 = m24;
+    _31 = m31; _32 = m32; _33 = m33; _34 = m34;
+    _41 = m41; _42 = m42; _43 = m43; _44 = m44;
 
     return *this;
 }
 
-Matrix4& Matrix4::SetPerspective(float inFOV, float inAspect, float inNear, float inFar)
+Matrix4& Matrix4::SetScale(float sx, float sy, float sz)
 {
-    float tanHalfFOV = std::tan(inFOV * 0.5f);
+    return Set(
+        sx, 0.0f, 0.0f, 0.0f,
+        0.0f, sy, 0.0f, 0.0f,
+        0.0f, 0.0f, sz, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
+
+Matrix4 Matrix4::Scale(float sx, float sy, float sz)
+{
+    Matrix4 result;
+    result.SetScale(sx, sy, sz);
+    return result;
+}
+
+Matrix4& Matrix4::SetTranslation(float tx, float ty, float tz)
+{
+    return Set(
+        1.0f, 0.0f, 0.0f, tx,
+        0.0f, 1.0f, 0.0f, ty,
+        0.0f, 0.0f, 1.0f, tz,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
+
+Matrix4 Matrix4::Translation(float tx, float ty, float tz)
+{
+    Matrix4 result;
+    result.SetTranslation(tx, ty, tz);
+    return result;
+}
+
+Matrix4 Matrix4::RotationFromEuler(float rx, float ry, float rz)
+{
+
+    float hx = rx * 0.5f;
+    float hy = ry * 0.5f;
+    float hz = rz * 0.5f;
+
+    float cx = std::cos(hx);
+    float sx = std::sin(hx);
+    float cy = std::cos(hy);
+    float sy = std::sin(hy);
+    float cz = std::cos(hz);
+    float sz = std::sin(hz);
+
+    float w = cz * cy * cx + sz * sy * sx;
+    float x = cz * cy * sx - sz * sy * cx;
+    float y = cz * sy * cx + sz * cy * sx;
+    float z = sz * cy * cx - cz * sy * sx;
+
+    float xx = x * x;
+    float yy = y * y;
+    float zz = z * z;
+
+    float xy = x * y;
+    float xz = x * z;
+    float yz = y * z;
+
+    float wx = w * x;
+    float wy = w * y;
+    float wz = w * z;
+
+    Matrix4 result;
+
+    return result.Set(
+        1.0f - 2.0f * (yy + zz), 2.0f * (xy - wz), 2.0f * (xz + wy), 0.0f,
+        2.0f * (xy + wz), 1.0f - 2.0f * (xx + zz), 2.0f * (yz - wx), 0.0f,
+        2.0f * (xz - wy), 2.0f * (yz + wx), 1.0f - 2.0f * (xx + yy), 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
+
+Matrix4& Matrix4::SetPerspectiveRH(float fovYRadians, float aspect, float nearZ, float farZ)
+{
+    float tanHalfFOV = std::tan(fovYRadians * 0.5f);
 
     float yScale = 1.0f / tanHalfFOV;
-    float xScale = yScale / inAspect;
+    float xScale = yScale / aspect;
 
-    float n = inNear;
-    float f = inFar;
+    float n = nearZ;
+    float f = farZ;
 
     return Set(
         xScale, 0.0f, 0.0f, 0.0f,
         0.0f, yScale, 0.0f, 0.0f,
-        0.0f, 0.0f, (f + n) / (n - f), (2.0f * f * n) / (f - n),
-        0.0f, 0.0f, 1.0f, 0.0f
+        0.0f, 0.0f, f / (n - f), (f * n) / (n - f),
+        0.0f, 0.0f, -1.0f, 0.0f
     );
+}
+
+Matrix4 Matrix4::PerspectiveRH(float fovYRadians, float aspect, float nearZ, float farZ)
+{
+    Matrix4 result;
+    result.SetPerspectiveRH(fovYRadians, aspect, nearZ, farZ);
+    return result;
+}
+
+Matrix4& Matrix4::SetLookAtRH(const Vector3& eye, const Vector3& target, const Vector3& up)
+{
+
+    Vector3 zAxis = (eye - target).Normalized();             
+    Vector3 xAxis = Vector3::Cross(up, zAxis).Normalized();   
+    Vector3 yAxis = Vector3::Cross(zAxis, xAxis);             
+
+    float tx = -Vector3::Dot(xAxis, eye);
+    float ty = -Vector3::Dot(yAxis, eye);
+    float tz = -Vector3::Dot(zAxis, eye);
+
+    return Set(
+        xAxis.x, xAxis.y, xAxis.z, tx,
+        yAxis.x, yAxis.y, yAxis.z, ty,
+        zAxis.x, zAxis.y, zAxis.z, tz,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
+
+Matrix4 Matrix4::LookAtRH(const Vector3& eye, const Vector3& target, const Vector3& up)
+{
+    Matrix4 result;
+    result.SetLookAtRH(eye, target, up);
+    return result;
 }
 
 Vector4 Matrix4::operator*(const Vector4& inVector) const
 {
     return Vector4(
-        _data[0] * inVector.x + _data[1] * inVector.y + _data[2] * inVector.z + _data[3] * inVector.w,
-        _data[4] * inVector.x + _data[5] * inVector.y + _data[6] * inVector.z + _data[7] * inVector.w,
-        _data[8] * inVector.x + _data[9] * inVector.y + _data[10] * inVector.z + _data[11] * inVector.w,
-        _data[12] * inVector.x + _data[13] * inVector.y + _data[14] * inVector.z + _data[15] * inVector.w
+        _11 * inVector.x + _12 * inVector.y + _13 * inVector.z + _14 * inVector.w,
+        _21 * inVector.x + _22 * inVector.y + _23 * inVector.z + _24 * inVector.w,
+        _31 * inVector.x + _32 * inVector.y + _33 * inVector.z + _34 * inVector.w,
+        _41 * inVector.x + _42 * inVector.y + _43 * inVector.z + _44 * inVector.w
     );
 }
 
@@ -82,26 +202,4 @@ Matrix4 Matrix4::operator*(const Matrix4& rhs) const
     result._44 = _41 * rhs._14 + _42 * rhs._24 + _43 * rhs._34 + _44 * rhs._44;
 
     return result;
-}
-
-Matrix4& Matrix4::SetTranslation(float tx, float ty, float tz)
-{
-    Set(
-        1.0f, 0.0f, 0.0f, tx,
-        0.0f, 1.0f, 0.0f, ty,
-        0.0f, 0.0f, 1.0f, tz,
-        0.0f, 0.0f, 0.0f, 1.0f
-    );
-    return *this;
-}
-
-Matrix4& Matrix4::SetScale(float inX, float inY, float inZ)
-{
-    Set(
-        inX, 0.0f, 0.0f, 0.0f,
-        0.0f, inY, 0.0f, 0.0f,
-        0.0f, 0.0f, inZ, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
-    );
-    return *this;
 }

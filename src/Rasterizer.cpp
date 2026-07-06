@@ -63,7 +63,7 @@ void Rasterizer::DrawPixel(int x, int y, float depth, std::uint32_t color)
 
 	// depth small -> far / big -> near
 	float oldDepth = (*mDepthBuffer)(x, y);
-	if (depth <= oldDepth)
+	if (oldDepth <= depth)
 	{
 		return;
 	}

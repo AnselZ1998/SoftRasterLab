@@ -17,10 +17,7 @@ bool Engine::StartUp(HINSTANCE hInstance)
         return false;
     }
 
-    if (!mSoftwareRenderer.StartUp(
-        mDisplayManager.GetWidth(),
-        mDisplayManager.GetHeight()
-    ))
+    if (!mRenderManager.StartUp(mDisplayManager))
     {
         mDisplayManager.ShutDown();
         return false;
@@ -65,8 +62,7 @@ void Engine::Run()
             break;
         }
 
-        mSoftwareRenderer.Render();
-        mDisplayManager.Present(mSoftwareRenderer.GetColorBuffer());
+        mRenderManager.render();
 
         Sleep(1);
     }
@@ -75,7 +71,7 @@ void Engine::Run()
 
 void Engine::ShutDown()
 {
-    mSoftwareRenderer.ShutDown();
+    mRenderManager.ShutDown();
     mDisplayManager.ShutDown();
     mIsStarted = false;
 }

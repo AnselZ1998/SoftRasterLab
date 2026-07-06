@@ -1,107 +1,479 @@
 #pragma once
 
+#include <algorithm>
+#include <cassert>
+#include <cmath>
 #include <ostream>
 
-class Vector2
+// =====================================================
+// TVector2
+// =====================================================
+
+template<typename T>
+class TVector2
 {
 public:
-    union {
+    union
+    {
         struct
         {
-            float x, y;
+            T x, y;
         };
 
-        float v[2];
-    };
-
-    explicit Vector2(float inValue);
-    Vector2(float inX, float inY): x(inX), y(inY) {};
-    Vector2(int inX, int inY) : x(float(inX)), y(float(inY)) {};
-
-};
-
-class Vector3
-{
-public:
-    union {
-        struct
-        {
-            float x, y, z;
-        };
-
-        float v[3];
+        T v[2];
     };
 
 public:
-    Vector3();
-    explicit Vector3(float inValue);
-    Vector3(float inX, float inY, float inZ);
+    TVector2()
+        : x(T(0)), y(T(0))
+    {
+    }
 
-    Vector3(const Vector3& inVector) = default;
-    Vector3& operator=(const Vector3& inVector) = default;
+    explicit TVector2(T inValue)
+        : x(inValue), y(inValue)
+    {
+    }
 
-    float Length() const;
-    Vector3 Normalized() const;
-    void NormalizeSelf();
+    TVector2(T inX, T inY)
+        : x(inX), y(inY)
+    {
+    }
 
-    static float Dot(const Vector3& a, const Vector3& b);
-    static Vector3 Cross(const Vector3& a, const Vector3& b);
+    float Length() const
+    {
+        return std::sqrt(static_cast<float>(x * x + y * y));
+    }
 
-    static Vector3 GetMax(const Vector3& a, const Vector3& b, const Vector3& c);
-    static Vector3 GetMin(const Vector3& a, const Vector3& b, const Vector3& c);
+    TVector2 Normalized() const
+    {
+        float length = Length();
 
-    Vector3 operator+(const Vector3& rhs) const;
-    Vector3 operator-(const Vector3& rhs) const;
-    Vector3 operator*(float scalar) const;
+        if (length <= 0.000001f)
+        {
+            return TVector2(T(0), T(0));
+        }
 
-    Vector3& operator+=(const Vector3& rhs);
-    Vector3& operator-=(const Vector3& rhs);
-    Vector3& operator*=(float scalar);
+        return TVector2(
+            static_cast<T>(x / length),
+            static_cast<T>(y / length)
+        );
+    }
 
-    float& operator[](int index);
-    const float& operator[](int index) const;
+    void NormalizeSelf()
+    {
+        float length = Length();
+
+        if (length <= 0.000001f)
+        {
+            return;
+        }
+
+        x = static_cast<T>(x / length);
+        y = static_cast<T>(y / length);
+    }
+
+    static T Dot(const TVector2& a, const TVector2& b)
+    {
+        return a.x * b.x + a.y * b.y;
+    }
+
+    TVector2 operator+(const TVector2& rhs) const
+    {
+        return TVector2(x + rhs.x, y + rhs.y);
+    }
+
+    TVector2 operator-(const TVector2& rhs) const
+    {
+        return TVector2(x - rhs.x, y - rhs.y);
+    }
+
+    TVector2 operator*(T scalar) const
+    {
+        return TVector2(x * scalar, y * scalar);
+    }
+
+    TVector2& operator+=(const TVector2& rhs)
+    {
+        x += rhs.x;
+        y += rhs.y;
+        return *this;
+    }
+
+    TVector2& operator-=(const TVector2& rhs)
+    {
+        x -= rhs.x;
+        y -= rhs.y;
+        return *this;
+    }
+
+    TVector2& operator*=(T scalar)
+    {
+        x *= scalar;
+        y *= scalar;
+        return *this;
+    }
+
+    T& operator[](int index)
+    {
+        assert(index >= 0 && index < 2);
+        return v[index];
+    }
+
+    const T& operator[](int index) const
+    {
+        assert(index >= 0 && index < 2);
+        return v[index];
+    }
 };
 
-class Vector4
+// =====================================================
+// TVector3
+// =====================================================
+
+template<typename T>
+class TVector3
 {
 public:
-    union {
+    union
+    {
         struct
         {
-            float x, y, z, w;
+            T x, y, z;
         };
 
-        float v[4];
+        T v[3];
     };
 
 public:
-    Vector4();
-    explicit Vector4(float inValue);
-    Vector4(float inX, float inY, float inZ, float inW = 1.0f);
-    Vector4(const float* inData);
-    Vector4(const Vector3& xyz, float inW = 1.0f);
+    TVector3()
+        : x(T(0)), y(T(0)), z(T(0))
+    {
+    }
 
-    Vector4(const Vector4& inVector) = default;
-    Vector4& operator=(const Vector4& inVector) = default;
+    explicit TVector3(T inValue)
+        : x(inValue), y(inValue), z(inValue)
+    {
+    }
 
-    Vector3 XYZ() const;
+    TVector3(T inX, T inY, T inZ)
+        : x(inX), y(inY), z(inZ)
+    {
+    }
 
-    static Vector4 FromPoint(const Vector3& p);
-    static Vector4 FromDirection(const Vector3& d);
+    float Length() const
+    {
+        return std::sqrt(static_cast<float>(x * x + y * y + z * z));
+    }
 
-    static Vector3 GetMax(const Vector4& a, const Vector4& b, const Vector4& c);
-    static Vector3 GetMin(const Vector4& a, const Vector4& b, const Vector4& c);
+    TVector3 Normalized() const
+    {
+        float length = Length();
 
-    Vector4 operator+(const Vector4& rhs) const;
-    Vector4 operator-(const Vector4& rhs) const;
-    Vector4 operator*(float scalar) const;
+        if (length <= 0.000001f)
+        {
+            return TVector3(T(0), T(0), T(0));
+        }
 
-    Vector4& operator+=(const Vector4& rhs);
-    Vector4& operator-=(const Vector4& rhs);
-    Vector4& operator*=(float scalar);
+        return TVector3(
+            static_cast<T>(x / length),
+            static_cast<T>(y / length),
+            static_cast<T>(z / length)
+        );
+    }
 
-    float& operator[](int index);
-    const float& operator[](int index) const;
+    void NormalizeSelf()
+    {
+        float length = Length();
 
-    friend std::ostream& operator<<(std::ostream& stream, const Vector4& value);
+        if (length <= 0.000001f)
+        {
+            return;
+        }
+
+        x = static_cast<T>(x / length);
+        y = static_cast<T>(y / length);
+        z = static_cast<T>(z / length);
+    }
+
+    static T Dot(const TVector3& a, const TVector3& b)
+    {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
+    static TVector3 Cross(const TVector3& a, const TVector3& b)
+    {
+        return TVector3(
+            a.y * b.z - a.z * b.y,
+            a.z * b.x - a.x * b.z,
+            a.x * b.y - a.y * b.x
+        );
+    }
+
+    static TVector3 GetMax(const TVector3& a, const TVector3& b, const TVector3& c)
+    {
+        return TVector3(
+            (std::max)(a.x, (std::max)(b.x, c.x)),
+            (std::max)(a.y, (std::max)(b.y, c.y)),
+            (std::max)(a.z, (std::max)(b.z, c.z))
+        );
+    }
+
+    static TVector3 GetMin(const TVector3& a, const TVector3& b, const TVector3& c)
+    {
+        return TVector3(
+            (std::min)(a.x, (std::min)(b.x, c.x)),
+            (std::min)(a.y, (std::min)(b.y, c.y)),
+            (std::min)(a.z, (std::min)(b.z, c.z))
+        );
+    }
+
+    TVector3 operator+(const TVector3& rhs) const
+    {
+        return TVector3(x + rhs.x, y + rhs.y, z + rhs.z);
+    }
+
+    TVector3 operator-(const TVector3& rhs) const
+    {
+        return TVector3(x - rhs.x, y - rhs.y, z - rhs.z);
+    }
+
+    TVector3 operator*(T scalar) const
+    {
+        return TVector3(x * scalar, y * scalar, z * scalar);
+    }
+
+    TVector3& operator+=(const TVector3& rhs)
+    {
+        x += rhs.x;
+        y += rhs.y;
+        z += rhs.z;
+        return *this;
+    }
+
+    TVector3& operator-=(const TVector3& rhs)
+    {
+        x -= rhs.x;
+        y -= rhs.y;
+        z -= rhs.z;
+        return *this;
+    }
+
+    TVector3& operator*=(T scalar)
+    {
+        x *= scalar;
+        y *= scalar;
+        z *= scalar;
+        return *this;
+    }
+
+    T& operator[](int index)
+    {
+        assert(index >= 0 && index < 3);
+        return v[index];
+    }
+
+    const T& operator[](int index) const
+    {
+        assert(index >= 0 && index < 3);
+        return v[index];
+    }
 };
+
+// =====================================================
+// TVector4
+// =====================================================
+
+template<typename T>
+class TVector4
+{
+public:
+    union
+    {
+        struct
+        {
+            T x, y, z, w;
+        };
+
+        T v[4];
+    };
+
+public:
+    TVector4()
+        : x(T(0)), y(T(0)), z(T(0)), w(T(1))
+    {
+    }
+
+    explicit TVector4(T inValue)
+        : x(inValue), y(inValue), z(inValue), w(inValue)
+    {
+    }
+
+    TVector4(T inX, T inY, T inZ, T inW = T(1))
+        : x(inX), y(inY), z(inZ), w(inW)
+    {
+    }
+
+    explicit TVector4(const T* inData)
+        : x(inData[0]), y(inData[1]), z(inData[2]), w(inData[3])
+    {
+    }
+
+    TVector4(const TVector3<T>& xyz, T inW = T(1))
+        : x(xyz.x), y(xyz.y), z(xyz.z), w(inW)
+    {
+    }
+
+    TVector3<T> XYZ() const
+    {
+        return TVector3<T>(x, y, z);
+    }
+
+    static TVector4 FromPoint(const TVector3<T>& p)
+    {
+        return TVector4(p.x, p.y, p.z, T(1));
+    }
+
+    static TVector4 FromDirection(const TVector3<T>& d)
+    {
+        return TVector4(d.x, d.y, d.z, T(0));
+    }
+
+    TVector3<T> PerspectiveDivide() const
+    {
+        assert(std::abs(static_cast<float>(w)) > 0.000001f);
+
+        return TVector3<T>(
+            static_cast<T>(x / w),
+            static_cast<T>(y / w),
+            static_cast<T>(z / w)
+        );
+    }
+
+    static TVector3<T> GetMax(const TVector4& a, const TVector4& b, const TVector4& c)
+    {
+        return TVector3<T>(
+            (std::max)(a.x, (std::max)(b.x, c.x)),
+            (std::max)(a.y, (std::max)(b.y, c.y)),
+            (std::max)(a.z, (std::max)(b.z, c.z))
+        );
+    }
+
+    static TVector3<T> GetMin(const TVector4& a, const TVector4& b, const TVector4& c)
+    {
+        return TVector3<T>(
+            (std::min)(a.x, (std::min)(b.x, c.x)),
+            (std::min)(a.y, (std::min)(b.y, c.y)),
+            (std::min)(a.z, (std::min)(b.z, c.z))
+        );
+    }
+
+    TVector4 operator+(const TVector4& rhs) const
+    {
+        return TVector4(
+            x + rhs.x,
+            y + rhs.y,
+            z + rhs.z,
+            w + rhs.w
+        );
+    }
+
+    TVector4 operator-(const TVector4& rhs) const
+    {
+        return TVector4(
+            x - rhs.x,
+            y - rhs.y,
+            z - rhs.z,
+            w - rhs.w
+        );
+    }
+
+    TVector4 operator*(T scalar) const
+    {
+        return TVector4(
+            x * scalar,
+            y * scalar,
+            z * scalar,
+            w * scalar
+        );
+    }
+
+    TVector4& operator+=(const TVector4& rhs)
+    {
+        x += rhs.x;
+        y += rhs.y;
+        z += rhs.z;
+        w += rhs.w;
+        return *this;
+    }
+
+    TVector4& operator-=(const TVector4& rhs)
+    {
+        x -= rhs.x;
+        y -= rhs.y;
+        z -= rhs.z;
+        w -= rhs.w;
+        return *this;
+    }
+
+    TVector4& operator*=(T scalar)
+    {
+        x *= scalar;
+        y *= scalar;
+        z *= scalar;
+        w *= scalar;
+        return *this;
+    }
+
+    T& operator[](int index)
+    {
+        assert(index >= 0 && index < 4);
+        return v[index];
+    }
+
+    const T& operator[](int index) const
+    {
+        assert(index >= 0 && index < 4);
+        return v[index];
+    }
+};
+
+// =====================================================
+// ostream
+// =====================================================
+
+template<typename T>
+std::ostream& operator<<(std::ostream& stream, const TVector2<T>& value)
+{
+    stream << value.x << " " << value.y;
+    return stream;
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& stream, const TVector3<T>& value)
+{
+    stream << value.x << " " << value.y << " " << value.z;
+    return stream;
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& stream, const TVector4<T>& value)
+{
+    stream << value.x << " " << value.y << " " << value.z << " " << value.w;
+    return stream;
+}
+
+// =====================================================
+// Common aliases
+// =====================================================
+
+using Vector2 = TVector2<float>;
+using Vector3 = TVector3<float>;
+using Vector4 = TVector4<float>;
+
+using Vector2f = TVector2<float>;
+using Vector3f = TVector3<float>;
+using Vector4f = TVector4<float>;
+
+using Vector2i = TVector2<int>;
+using Vector3i = TVector3<int>;
+using Vector4i = TVector4<int>;
