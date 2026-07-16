@@ -1,5 +1,4 @@
 #include <Windows.h>
-
 #include "Engine.h"
 
 int WINAPI WinMain(

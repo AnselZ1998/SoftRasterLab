@@ -4,6 +4,7 @@
 
 #include "DisplayManager.h"
 #include "RenderManager.h"
+#include "SceneManager.h"
 
 class Engine
 {
@@ -18,6 +19,7 @@ public:
 private:
     DisplayManager mDisplayManager;
     RenderManager mRenderManager;
+    SceneManager mSceneManager;
 
     bool mIsStarted = false;
 

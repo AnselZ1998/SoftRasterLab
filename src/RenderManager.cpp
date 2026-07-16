@@ -1,8 +1,9 @@
 #include "RenderManager.h"
 
-bool RenderManager::StartUp(DisplayManager& inDisplayManager)
+bool RenderManager::StartUp(DisplayManager& inDisplayManager, SceneManager& inSceneManager)
 {
 	mDisplayManager = &inDisplayManager;
+	mSceneManager = &inSceneManager;
 
 	if (!initSoftwareRenderer())
 	{
@@ -15,7 +16,10 @@ bool RenderManager::StartUp(DisplayManager& inDisplayManager)
 void RenderManager::ShutDown()
 {
 	mSoftwareRenderer.ShutDown();
+	mSceneManager = nullptr;
 	mDisplayManager = nullptr;
+	mScene = nullptr;
+	mIsStarted = false;
 }
 
 void RenderManager::render()
@@ -25,9 +29,12 @@ void RenderManager::render()
 		return;
 	}
 
+	Scene* mScene = mSceneManager->GetCurrentScene();
+
 	// Clear Buffer(Color and Depth) in Buffer.h of SoftwareRender.h
 	mSoftwareRenderer.BeginFrame();
-
+	
+	mSoftwareRenderer.SetCameraToRender(mScene->getCurrentCamera());
 	// renderInstance
 	mSoftwareRenderer.drawTriangularMesh();
 

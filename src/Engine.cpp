@@ -12,14 +12,15 @@ bool Engine::StartUp(HINSTANCE hInstance)
         hInstance,
         720,
         480
-    ))
+    ) || !mSceneManager.StartUp())
     {
         return false;
     }
 
-    if (!mRenderManager.StartUp(mDisplayManager))
+    if (!mRenderManager.StartUp(mDisplayManager, mSceneManager))
     {
         mDisplayManager.ShutDown();
+        mSceneManager.ShutDown();
         return false;
     }
 
@@ -72,6 +73,7 @@ void Engine::Run()
 void Engine::ShutDown()
 {
     mRenderManager.ShutDown();
+    mSceneManager.ShutDown();
     mDisplayManager.ShutDown();
     mIsStarted = false;
 }

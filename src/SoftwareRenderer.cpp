@@ -33,8 +33,8 @@ void SoftwareRenderer::ShutDown()
     {
         mIsStarted = false;
     }
-
     mRasterizer.ShutDown();
+    mCamera = nullptr;
 }
 
 void SoftwareRenderer::BeginFrame(std::uint32_t clearColor)
@@ -45,6 +45,11 @@ void SoftwareRenderer::BeginFrame(std::uint32_t clearColor)
     }
     mColorBuffer.Clear(clearColor);
     mDepthBuffer.Clear(1.0f);
+}
+
+void SoftwareRenderer::SetCameraToRender(Camera* camera)
+{
+    mCamera = camera;
 }
 
 const Buffer<std::uint32_t>* SoftwareRenderer::GetColorBuffer() const
@@ -64,10 +69,7 @@ void SoftwareRenderer::drawTriangularMesh()
     Vector3 p2(0.0f, 0.5f, 0.0f);
 
     float b_d0 = 0.3f, b_d1 = 0.3f, b_d2 = 0.3f;
-    Vector3 cameraPos(0.0f, 0.0f, 3.0f);
-    Vector3 cameraTarget(0.0f, 0.0f, 0.0f);
-    Vector3 cameraUp(0.0f, 1.0f, 0.0f);
-    constexpr float PI = 3.1415926535f;
+    
     static float time = 0.0f;
     time += 0.02f;
 
@@ -80,11 +82,8 @@ void SoftwareRenderer::drawTriangularMesh()
     Matrix4 model = transform * rotation * scale;
 
     // View (world -> view)
-    Matrix4 view = Matrix4::LookAtRH(cameraPos, cameraTarget, cameraUp);
-    Matrix4 projection = Matrix4::PerspectiveRH(60.0f * PI / 180.0f, float(swWidth) / float(swHeight),
-        0.1f,
-        100.0f
-        );
+    Matrix4 view = mCamera->viewMatrix;
+    Matrix4 projection = mCamera->projectionMatrix;
 
     // Projection (View -> Clip)
     Matrix4 mvp = projection * view * model;
